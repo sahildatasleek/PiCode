@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Amazon Connect Chat Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+</head>
+
+<body>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        #ccpContainer {
+            width: 200px;
+            height: 525px;
+            overflow: hidden;
+            float: left;
+            margin-left: 22px;
+            padding: 10px;
+
+        }
+
+
+        nav {
+            width: 690px;
+        }
+
+        .section-main {
+
+            padding: 10px;
+            max-width: 669px;
+            height: 511px;
+            margin-left: 22px;
+            float: left;
+            /*overflow: auto;*/
+            /* width: 100%;
+            height: 100%; */
+            position: absolute;
+            /* top: 0; */
+            display: table-cell;
+            left: 0;
+
+        }
+
+        /* .section-chat {
+
+            width: 100%;
+            height: 100%;
+            display: table-cell;
+            padding: 3px;
+            max-width: 365px;
+            height: 525px;
+            margin-left: 3px;
+            float: left;
+            overflow: auto;
+            border-radius: 5px 5px 45px 5px;
+
+        } */
+
+        .section-chat {
+
+            width: max-content;
+            height: max-content;
+            /* display: table-cell; */
+            /* padding: 3px; */
+            /* max-width: 365px; */
+            /* height: 525px; */
+            /* margin-left: 3px; */
+            /* float: left; */
+            overflow: auto;
+            /* border-radius: 5px 5px 45px 5px; */
+
+        }
+
+
+        #root {
+            overflow: auto;
+
+        }
+
+        #root>div {
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 388px;
+            height: 549px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+        }
+.QKHPF {
+    
+    padding-left: 10px !important;
+}
+        .hVSxmh {
+            font-family: 'Roboto', sans-serif !important;
+
+        }
+
+        .fApvdG {
+            position: relative !important;
+            display: flex;
+            align-items: center;
+        }
+
+        #startChat {
+            width: auto;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid #282828;
+            color: #fff;
+            padding: 1px 15px;
+            text-decoration: none;
+            font-size: 1.1em;
+            background: #555;
+            background: -webkit-gradient(linear, left bottom, left top, color-stop(0.12, rgb(60, 60, 60)), color-stop(1, rgb(85, 85, 85)));
+            background: -moz-linear-gradient(center bottom, rgb(60, 60, 60) 12%, rgb(85, 85, 85) 100%);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+            -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.25);
+        }
+
+        .centered {
+            text-align: center;
+        }
+
+        .spinner.loading {
+            display: none;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .loading-text {
+            width: 90px;
+            position: absolute;
+            top: 245px;
+            left: 137px;
+            text-align: center;
+        }
+
+
+        .spinner.loading:before {
+            content: "";
+            height: 110px;
+            width: 110px;
+            margin: -15px auto auto -15px;
+            position: absolute;
+            top: 218px;
+            left: 143px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2180c0 #ccc #ccc;
+            border-radius: 100%;
+            animation: rotation .7s infinite linear;
+        }
+
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(359deg);
+            }
+        }
+
+        ol.normal {
+            list-style-type: disc;
+            padding-left: 50px;
+        }
+
+        .wrap {
+            /* white-space: nowrap; */
+            width: 360px;
+            height: 600px;
+
+        }
+
+        /* .header-wrapper {
+            background: #3060f9;
+            text-align: center;
+            padding: 10px;
+            color: #fff;
+            border-radius: 3px;
+            font-family: Montserrat, sans-serif, Arial;
+        } */
+
+
+
+        .header-wrapper {
+            background: black !important;
+            text-align: left !important;
+            padding: 6px 9px !important;
+            color: #fff !important;
+            /* border-radius: 0 0 12px 12px !important; */
+            font-family: 'Montserrat', 'Segoe UI', sans-serif !important;
+            display: flex !important;
+            align-items: center !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            position: sticky !important;
+            top: 0 !important;
+            width: 387px;
+            /* justify-content: space-between; */
+            z-index: 100 !important;
+        }
+
+        .bot-logo {
+            width: 40px;
+            height: 40px;
+            /* border-radius: 50%; */
+            /* margin-right: 15px; */
+            object-fit: cover;
+            border: none !important;
+            /* border: 2px solid rgba(255, 255, 255, 0.2); */
+        }
+
+        .bot-info {
+            flex-grow: 1;
+        }
+
+        .bot-name {
+            font-size: 0.9rem !important;
+            /* font-weight: 600 !important; */
+            margin: 0 !important;
+            letter-spacing: -0.25px !important;
+            display: flex;
+            justify-content: center;
+        }
+
+        .bot-description {
+            font-size: 0.85rem !important;
+            margin: 2px 0 0 0 !important;
+            opacity: 0.9;
+            display: flex !important;
+            /* gap: 1rem !important; */
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            margin-right: 6px;
+            box-shadow: 0 0 8px #4caf50;
+        }
+
+        .status-text {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .welcome-text {
+            transition: opacity 0.3s ease !important;
+            font-size: 1.25rem !important;
+            font-weight: 600 !important;
+            margin: 0 !important;
+            letter-spacing: -0.25px !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+            position: relative !important;
+            display: inline-block !important;
+            padding-bottom: 4px !important;
+        }
+
+        /* Underline animation */
+        .welcome-text::after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 2px !important;
+            background: rgba(255, 255, 255, 0.5) !important;
+            transform: scaleX(0) !important;
+            transform-origin: right !important;
+            transition: transform 0.3s ease !important;
+        }
+
+        .header-wrapper:hover .welcome-text::after {
+            transform: scaleX(1) !important;
+            transform-origin: left !important;
+        }
+
+        /* Pulsing animation for attention (optional) */
+        @keyframes subtlePulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.9;
+            }
+        }
+
+        .header-wrapper:active {
+            animation: subtlePulse 0.5s ease !important;
+        }
+
+        /* .welcome-text {
+            margin: 10px;
+            padding-right: 40px;
+            padding-left: 10px;
+            display: inline;
+        } */
+
+        .footer-actions {
+            background: #eee;
+            height: 85px;
+        }
+
+        .button-wrapper {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            height: 100%;
+            align-items: center;
+            border-radius: 5px;
+        }
+
+        .button-wrapper>button {
+            min-width: 85px;
+            margin: 6px;
+            font-weight: bold;
+        }
+
+        .action-button {
+            width: 43%;
+            line-height: 1.465;
+            font-weight: normal;
+            white-space: nowrap;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            text-align: center;
+            vertical-align: middle;
+            padding-right: 10px;
+            padding-left: 10px;
+            font-family: AmazonEmber_Md, Helvetica, sans-serif;
+            display: inline-flex;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            justify-content: center;
+            max-width: 260px;
+            padding-top: 0.45rem;
+            padding-bottom: 0.45rem;
+            font-size: 0.875rem;
+            box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 3px 0px;
+            border-width: 0px;
+            border-style: solid;
+            background: linear-gradient(rgb(208, 2, 27), rgb(208, 2, 27) 80%, rgb(233, 2, 30));
+            border-color: rgb(208, 2, 27);
+        }
+
+        .boxmy {
+            width: 16rem;
+            height: 12rem;
+        }
+
+        #headmsg {
+            background: #000000;
+
+            text-align: center;
+            width: 370px;
+            color: #fff;
+            border-radius: 3px;
+            font-family: Montserrat, sans-serif, Arial;
+        }
+
+        #msg {
+           
+            font-family: Montserrat, sans-serif, Arial;
+            /* border: 1px solid; */
+    line-height: 1.3rem;
+    width: 23rem;
+    font-size: 0.8rem;
+        }
+
+        .myclass {
+            width: 20rem;
+        }
+
+        .ikbzRz {
+            width: 300px;
+            font-family: Arial, Helvetica, "sans-serif";
+            margin: 0px !important;
+            border-collapse: collapse;
+            box-shadow: 0px 2px 3px #ffffff !important;
+            box-sizing: border-box;
+        }
+        .eMnscU {
+            color: #222222 !important;
+            /* background: #DCDCDC !important; */
+            padding: 14px 18px !important;
+            margin-top: 6px !important;
+            border-radius: 12px !important;
+            position: relative !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            border: none !important;
+            font-family: 'Segoe UI', Roboto, sans-serif !important;
+            line-height: 1.4 !important;
+            max-width: 85% !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        }
+
+        .eMnscU:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* Optional chat bubble arrow */
+        .eMnscU:after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: -10px !important;
+            left: 20px !important;
+            border-width: 10px 10px 0 !important;
+            border-style: none !important;
+            border-color: #aedfb4 transparent !important;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1)) !important;
+        }
+
+        .bMIrvK {
+            color: #222222 !important;
+            /* background: #D1E7F1 !important; */
+            padding: 14px 18px !important;
+            margin-top: 6px !important;
+            border-radius: 12px !important;
+            position: relative !important;
+            border: none !important;
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif !important;
+            line-height: 1.5 !important;
+            max-width: 85% !important;
+            transition: all 0.2s ease !important;
+        }
+
+
+        .bMIrvK:hover {
+            transform: translateY(-2px) !important;
+            box-shadow:
+                0 3px 6px rgba(0, 0, 0, 0.08),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+        }
+
+
+        .iodjNM {
+            float: left;
+            max-width: 150px;
+            text-overflow: ellipsis;
+            display: flex !important;
+            white-space: nowrap;
+            align-items: center !important;
+        }
+
+        #downloadTranscriptBtn {
+            margin-left: auto;
+            background: #000000;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        #downloadTranscriptBtn img {
+            height: 2rem;
+            width: 2rem;
+        }
+
+        #downloadTranscriptBtn:hover {
+            background: #2040c0;
+        }
+
+        #downloadTranscriptBtn:active {
+            transform: translateY(1px);
+        }
+
+        .ljWANj {
+            height: 100% !important;
+        }
+
+        .ljaAIp {
+            height: 23rem !important;
+        }
+
+        .fgSGc {
+            background: rgb(255 255 255) !important;
+            color: black !important;
+            border-radius: 7px !important;
+            text-decoration: underline !important;
+            /* padding: 0px !important; */
+            font-size: 0.75rem !important;
+            box-shadow: none !important;
+        }
+        .kAEwXN{
+            border: 0px solid !important;
+
+        }
+.dTQTas{
+    padding:6px !important;
+}
+        .gIPOfW {
+            background: #ffffff !important;
+            height: 1rem !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            padding: 0px !important;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        #closeChatBtn {
+            line-height: 1.465;
+            font-weight: normal;
+            white-space: nowrap;
+            color: rgb(17, 17, 17);
+            cursor: pointer;
+            text-align: center;
+            vertical-align: middle;
+            border-width: 0px;
+            border-style: solid;
+            padding: 0.45rem 10px;
+            font-family: Arial, Helvetica, "sans-serif";
+            display: inline-flex;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            justify-content: center;
+            max-width: 260px;
+            background: linear-gradient(rgb(255, 255, 255), rgb(255, 255, 255) 80%, rgb(255, 255, 255));
+            border-color: rgb(255, 255, 255);
+            font-size: 0.875rem;
+            box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 3px 0px;
+            margin-top: 1rem;
+            font-weight: 700;
+
+        }
+
+        #btnreset {
+
+     width: 387px;
+    /* height: 450px; */
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    cursor: pointer;
+        }
+    
+        .hcFSeP{
+            margin:0px !important;
+        }
+    </style>
+
+    <div class="wrap">
+        <section id="section-main">
+            <header class="myclass">
+                <div id="headmsg"></div>
+                <div id="msg"></div>
+                <div id="btnreset"></div>
+
+            </header>
+
+        </section>
+
+
+
+      <script>
+    // Initial/Default values
+    let myname = "";
+    let email = ""
+
+    // --- GLOBAL VARIABLES ---
+    const queryParams = new URLSearchParams(window.location.search);
+    const langcode = "en";
+    let welcomeText = "Let’s chat! How can I help?";
+    let resetFormmeesage = ""
+    let dynamicSystemMessage = "System Message"
+    let dynamicBot = "BOT"
+    window.lang = "en";
+    let loadingtext = "loading";
+    let isReinitiating = false; // Flag to prevent repeated disconnections
+    // --- END GLOBAL VARIABLES ---
+
+let accountValue = "";
+    async function initializeChatWithUserData() {
+        // 1. Get the URL parameters
+        // (Logic for extracting accountValue 'sub' remains the same)
+        
+        const queryString = window.location.search;
+
+        if (queryString.includes('?sub=')) {
+            try {
+                const subSplit = queryString.split('?sub=');
+                if (subSplit.length > 1) {
+                    let rawSubValue = subSplit[1];
+                    const finalSubValue = rawSubValue.split('&')[0];
+                    if (finalSubValue) {
+                        accountValue = finalSubValue;
+                    }
+                }
+            } catch (e) {
+                console.error("Error parsing non-standard URL for 'sub' parameter:", e);
+            }
+        } else if (queryParams.has('sub')) {
+            accountValue = queryParams.get('sub');
+        }
+
+        // 2. Define the API endpoint and request body
+        const apiUrl = "https://bdh3pg6dhc.execute-api.us-east-1.amazonaws.com/subidProd/summary/subidget";
+        const requestBody = {
+            "Account": accountValue
+        };
+
+        try {
+            $('.loading-text').text("Fetching user data...");
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.Name) {
+                    myname = data.Name;
+                }
+                if (data.Email) {
+                    email = data.Email;
+                }
+            } else {
+                console.error(`API call failed with status: ${response.status}. Using default user info.`);
+            }
+
+        } catch (error) {
+            console.error("Error during API fetch (network/parsing):", error);
+        }
+
+        // Once data is fetched (or default is set), proceed to initiate chat session
+        initiateChatSession();
+    }
+
+
+    function resetForm() {
+        document.getElementById("headmsg").innerHTML = `  <div class="header-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcS4cTXshWVNR_X4wSZiOQZEVYDRH4Vv2CqQ&s" class="bot-logo" alt="Inkybot Logo">
+            <div class="bot-info">
+                <div class="bot-name">Let’s chat! How can I help?</div>
+            </div>
+        </div>`;
+
+        document.getElementById("msg").innerHTML = resetFormmeesage;
+        $("#section-chat").hide("slide");
+
+        document.getElementById("btnreset").innerHTML = '<button id="closeChatBtn"> Start new chat</button>';
+        document.getElementById("closeChatBtn").addEventListener("click", startNewChatFlow);
+    }
+
+    /**
+     * The core restart function. Clears UI and starts the main flow.
+     */
+    function startNewChatFlow() {
+        // Clear the disconnected message UI
+        document.getElementById("btnreset").innerHTML = "";
+        document.getElementById("headmsg").innerHTML = "";
+        document.getElementById("msg").innerHTML = "";
+
+        // Reset the re-initiating flag
+        isReinitiating = false;
+
+        // Start the full initialization process again (fetch data, generate new ID, start chat)
+        initializeChatWithUserData(); 
+    }
+
+
+    function initiateChatSession() {
+        var enableAttachments = "true";
+        
+        // Logic to ensure a new contactid for a new session
+        let contactid = localStorage.getItem('mycontactid');
+        if (!contactid) {
+            contactid = Math.random().toString();
+            localStorage.setItem('mycontactid', contactid);
+        }
+        
+        var ContactId = contactid;
+
+        if (ContactId == undefined || ContactId == null) {
+            document.getElementById("msg").innerHTML = "No Contact ID found.. This is an invalid chat initiation link";
+            return;
+        }
+
+        $('.loading-text').text(loadingtext); // Reset loading text
+
+        connect.ChatInterface.initiateChat({
+            name: myname ? myname : " ",
+            username: ContactId,
+            region: "us-east-1",
+            apiGatewayEndpoint: "https://0pjdz9q771.execute-api.us-east-1.amazonaws.com/Prod",
+            contactAttributes: JSON.stringify({
+                "Email": email,
+                "accountid":accountValue
+            }),
+            contactFlowId: "a6734665-c360-480f-9379-38596c190d71",
+            instanceId: "c168a08f-620d-4d63-8415-887c61003839",
+            featurePermissions: {
+                "ATTACHMENTS": enableAttachments === 'true',
+                MESSAGING_MARKDOWN: true,
+            }
+        }, successHandler, failureHandler);
+
+        $("#nav").css("width", "1063");
+        $('#chatWrapper').hide();
+        $("#section-chat").show("slide");
+        $("#section-chat").draggable({
+            handle: ".header-wrapper"
+        });
+        $("#divSpinner").delay(310).fadeIn();
+    }
+
+
+    function successHandler(chatSession) {
+        window.chatSession = chatSession;
+
+        // Chat connected: Hide loading, show chat
+        $("#divSpinner").fadeOut(200);
+        $('#chatWrapper').fadeIn(400);
+
+        // (Transcript downloading and item decorator logic remains the same)
+        chatSession.incomingItemDecorator = function (item) {
+            if (["SYSTEM_MESSAGE"].indexOf(item.displayName) !== -1) {
+                item.displayName = dynamicSystemMessage || "System Message";
+            }
+            if (["BOT"].indexOf(item.displayName) !== -1) {
+                item.displayName = dynamicBot || "BOT";
+            }
+            return item;
+        }
+
+        let incomingarray = [];
+        $('#downloadTranscriptBtn').off('click').on('click', function () {
+            const content = incomingarray.join('\n');
+            const link = document.createElement('a');
+            link.href = `data:text/plain,${encodeURIComponent(content)}`;
+            link.download = 'all-files.txt';
+            link.click();
+        });
+        chatSession.onIncoming(function (data) { 
+        
+            incomingarray.push("Inky" +" "+ ":" + data.Content );
+            
+            
+        });
+        chatSession.onOutgoing(function (data) {
+            incomingarray.push("Customer" +" "+":" + data.Content );
+        });
+
+
+        // *** RESTART LOGIC: Handle Disconnection ***
+        chatSession.onChatDisconnected(function (data) {
+            // Prevent multiple disconnections from causing issues
+            if (isReinitiating) return;
+            isReinitiating = true;
+
+            // Clear the contact ID immediately
+            localStorage.removeItem('mycontactid');
+            
+            // Wait briefly before showing the restart button, giving the SDK time to clean up.
+            setTimeout(function() {
+                 resetForm();
+            }, 500); // 500ms delay to prevent immediate re-initiation
+        });
+        // *** END RESTART LOGIC ***
+    }
+
+
+    function failureHandler(error) {
+        console.log("Chat failed:", error);
+    }
+
+    // --- MAIN EXECUTION BLOCKS ---
+
+    // 1. Initialize the Chat Interface (ONLY ONCE)
+    $(document).ready(() => {
+        connect.ChatInterface.init({
+            containerId: 'root',
+            headerConfig: {
+                isHTML: true,
+                render: () => {
+                    return (`
+                         <div class="header-wrapper">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcS4cTXshWVNR_X4wSZiOQZEVYDRH4Vv2CqQ&s" class="bot-logo" alt="Inkybot Logo">
+                            <div class="bot-info">
+                                <div class="bot-name">Let’s chat! How can I help?</div>
+                            </div>
+                            <button id="downloadTranscriptBtn" title="Download Transcript" style="margin-left: auto; cursor: pointer;">
+                               <i class="fa-solid fa-arrow-down" style="color: #f7f7f7;"></i>
+                            </button>
+                        </div>
+                    `)
+                }
+            }
+        });
+        
+        // 2. Start the first chat attempt
+        initializeChatWithUserData();
+    });
+
+</script>
+
+        <section class="section-chat" id="section-chat" style="display: none">
+
+
+
+            <div id="chatWrapper">
+                <div id="root"></div>
+            </div>
+
+            <div class="centered">
+                <div id="divSpinner" class="spinner loading">
+
+
+                    <div class="loading-text"></div>
+
+                </div>
+
+                <script>
+
+                    ! function (l) {
+                        function e(e) {
+                            for (var r, t, n = e[0], o = e[1], u = e[2], f = 0, i = []; f < n.length; f++) t = n[f], p[
+                                t] &&
+                                i.push(
+                                    p[t][0]), p[t] = 0;
+                            for (r in o) Object.prototype.hasOwnProperty.call(o, r) && (l[r] = o[r]);
+                            for (s && s(e); i.length;) i.shift()();
+                            return c.push.apply(c, u || []), a()
+                        }
+
+                        function a() {
+                            for (var e, r = 0; r < c.length; r++) {
+                                for (var t = c[r], n = !0, o = 1; o < t.length; o++) {
+                                    var u = t[o];
+                                    0 !== p[u] && (n = !1)
+                                }
+                                n && (c.splice(r--, 1), e = f(f.s = t[0]))
+                            }
+                            return e
+                        }
+                        var t = {},
+                            p = {
+                                1: 0
+                            },
+                            c = [];
+
+                        function f(e) {
+                            if (t[e]) return t[e].exports;
+                            var r = t[e] = {
+                                i: e,
+                                l: !1,
+                                exports: {}
+                            };
+                            return l[e].call(r.exports, r, r.exports, f), r.l = !0, r.exports
+                        }
+                        f.m = l, f.c = t, f.d = function (e, r, t) {
+                            f.o(e, r) || Object.defineProperty(e, r, {
+                                enumerable: !0,
+                                get: t
+                            })
+                        }, f.r = function (e) {
+                            "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol
+                                .toStringTag, {
+                                value: "Module"
+                            }), Object.defineProperty(e, "__esModule", {
+                                value: !0
+                            })
+                        }, f.t = function (r, e) {
+                            if (1 & e && (r = f(r)), 8 & e) return r;
+                            if (4 & e && "object" == typeof r && r && r.__esModule) return r;
+                            var t = Object.create(null);
+                            if (f.r(t), Object.defineProperty(t, "default", {
+                                enumerable: !0,
+                                value: r
+                            }), 2 & e && "string" != typeof r)
+                                for (var n in r) f.d(t, n, function (e) {
+                                    return r[e]
+                                }.bind(null, n));
+                            return t
+                        }, f.n = function (e) {
+                            var r = e && e.__esModule ? function () {
+                                return e.default
+                            } : function () {
+                                return e
+                            };
+                            return f.d(r, "a", r), r
+                        }, f.o = function (e, r) {
+                            return Object.prototype.hasOwnProperty.call(e, r)
+                        }, f.p = "./";
+                        var r = window.webpackJsonp = window.webpackJsonp || [],
+                            n = r.push.bind(r);
+                        r.push = e, r = r.slice();
+                        for (var o = 0; o < r.length; o++) e(r[o]);
+                        var s = n;
+                        a()
+                    }([])
+
+                    //Update browser details
+                    var nVer = navigator.appVersion;
+                    var nAgt = navigator.userAgent;
+                    var browserName = navigator.appName;
+                    var fullVersion = '' + parseFloat(navigator.appVersion);
+                    var majorVersion = parseInt(navigator.appVersion, 10);
+                    var nameOffset, verOffset, ix;
+
+                    // In Opera, the true version is after "OPR" or after "Version"
+                    if ((verOffset = nAgt.indexOf("OPR")) != -1) {
+                        browserName = "Opera";
+                        fullVersion = nAgt.substring(verOffset + 4);
+                        if ((verOffset = nAgt.indexOf("Version")) != -1)
+                            fullVersion = nAgt.substring(verOffset + 8);
+                    }
+                    // In MS Edge, the true version is after "Edg" in userAgent
+                    else if ((verOffset = nAgt.indexOf("Edg")) != -1) {
+                        browserName = "Microsoft Edge";
+                        fullVersion = nAgt.substring(verOffset + 4);
+                    }
+                    // In MSIE, the true version is after "MSIE" in userAgent
+                    else if ((verOffset = nAgt.indexOf("MSIE")) != -1) {
+                        browserName = "Microsoft Internet Explorer";
+                        fullVersion = nAgt.substring(verOffset + 5);
+                    }
+                    // In Chrome, the true version is after "Chrome" 
+                    else if ((verOffset = nAgt.indexOf("Chrome")) != -1) {
+                        browserName = "Chrome";
+                        fullVersion = nAgt.substring(verOffset + 7);
+                    }
+                    // In Safari, the true version is after "Safari" or after "Version" 
+                    else if ((verOffset = nAgt.indexOf("Safari")) != -1) {
+                        browserName = "Safari";
+                        fullVersion = nAgt.substring(verOffset + 7);
+                        if ((verOffset = nAgt.indexOf("Version")) != -1)
+                            fullVersion = nAgt.substring(verOffset + 8);
+                    }
+                    // In Firefox, the true version is after "Firefox" 
+                    else if ((verOffset = nAgt.indexOf("Firefox")) != -1) {
+                        browserName = "Firefox";
+                        fullVersion = nAgt.substring(verOffset + 8);
+                    }
+                    // In most other browsers, "name/version" is at the end of userAgent 
+                    else if ((nameOffset = nAgt.lastIndexOf(' ') + 1) <
+                        (verOffset = nAgt.lastIndexOf('/'))) {
+                        browserName = nAgt.substring(nameOffset, verOffset);
+                        fullVersion = nAgt.substring(verOffset + 1);
+                        if (browserName.toLowerCase() == browserName.toUpperCase()) {
+                            browserName = navigator.appName;
+                        }
+                    }
+                    // trim the fullVersion string at semicolon/space if present
+                    if ((ix = fullVersion.indexOf(";")) != -1)
+                        fullVersion = fullVersion.substring(0, ix);
+                    if ((ix = fullVersion.indexOf(" ")) != -1)
+                        fullVersion = fullVersion.substring(0, ix);
+
+                    majorVersion = parseInt('' + fullVersion, 10);
+                    if (isNaN(majorVersion)) {
+                        fullVersion = '' + parseFloat(navigator.appVersion);
+                        majorVersion = parseInt(navigator.appVersion, 10);
+                    }
+                    //browserdetails
+                    // document.getElementById("msg").innerHTML = ''
+                    // +'Browser name  = '+browserName+':'
+                    // +'Full version  = '+fullVersion+':'
+                    // +'Major version = '+majorVersion+':'
+                    // +'navigator.appName = '+navigator.appName+':'
+                    // +'navigator.userAgent = '+navigator.userAgent+':';
+
+
+                </script>
+
+                <script src="js/amazon-connect-chat-interface.js"></script>
+                <script> amazon_connect('supportedMessagingContentTypes', ['text/plain', 'text/markdown']);</script>
+        </section>
+    </div>
+    <div id="browserdetails"> </div>
+
+
+
+</body>
+
+</html>
